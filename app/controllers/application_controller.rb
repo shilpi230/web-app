@@ -2,14 +2,14 @@ class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
-  
   include DeviseWhitelist
+  include CurrentUserConcern
+  before_action :authenticate_user!
   
-  before_filter :configure_permitted_parameters, if: :devise_controller?
-
-  def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
-    devise_parameter_sanitizer.permit(:account_update, keys: [:name])
+  def require_admin
+    if !logged_in? || (logged_in? and !current_user.admin?)
+      flash[:danger] = "Only admins can perform that action"
+    end
   end
   
 end

@@ -1,5 +1,6 @@
 class ArticlesController < ApplicationController
   before_action :set_article, only: [:show, :edit, :update, :destroy]
+  before_action :authenticate_user!
 
   # GET /articles
   # GET /articles.json
@@ -71,4 +72,12 @@ class ArticlesController < ApplicationController
     def article_params
       params.require(:article).permit(:title, :description, :user_id)
     end
+    
+    def require_same_user
+      unauthorized =  (current_user != @article.user_id) 
+      if unauthorized
+      flash[:danger] = "You can only edit or delete your own articles"
+      end
+    end
+  
 end
