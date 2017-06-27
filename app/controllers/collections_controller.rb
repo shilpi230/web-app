@@ -1,11 +1,10 @@
 class CollectionsController < ApplicationController
   before_action :set_collection, only: [:show, :edit, :update, :destroy]
-  before_action :require_admin
 
   # GET /collections
   # GET /collections.json
   def index
-    @collections = Collection.all
+    @collections = current_user.collections
   end
 
   # GET /collections/1
@@ -66,26 +65,12 @@ class CollectionsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
       @collection = Collection.find(params[:id])
+      authorize @collection
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def collection_params
       params.require(:collection).permit(:name, :user_id)
     end
-    
-   def require_same_user
-
-     if params[:id].present?
-       collection_user_id = @collection.user_id
-     else
-       collection_user_id = params[:collection][:user_id].to_i
-     end
-
-     unauthorized =  (current_user.id != collection_user_id) && (!current_user.admin?)
-     if unauthorized
-       flash[:danger] = "You can only edit or delete your own collection"
-       redirect_to root_path
-     end
-   end
 
 end

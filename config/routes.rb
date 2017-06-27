@@ -1,4 +1,16 @@
 Rails.application.routes.draw do
+  namespace :admin do
+    resources :users
+    resources :articles
+    resources :article_categories
+    resources :article_collections
+    resources :categories
+    resources :collections
+    resources :guest_users
+
+    root to: "users#index"
+  end
+
   devise_for :users, path: '', path_names: { sign_in: 'login', sign_out: 'logout', sign_up: 'register' }
   
   get 'pages/home'
